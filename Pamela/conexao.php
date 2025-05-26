@@ -1,8 +1,12 @@
 <?php
+session_start();
+
 $localhost = "localhost";
 $user = "root";
 $passw = "aluno";
 $banco = "notamais";
+
+global $pdo;
 
 try{
     $pdo = new PDO("mysql:dbname=".$banco."; host=".$localhost,$user,$passw);
@@ -12,7 +16,4 @@ try{
     echo "ERRO: ".$e->getMessage();
     exit;
 }
-
-
-
- ?>
+?>
