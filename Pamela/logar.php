@@ -1,23 +1,32 @@
+
 <?php
-    if(isset($_POST['email']) && !empty($_POST['email']) && isset($_POST['senha']) && !empty($_POST['senha'])){
-       
-        require 'conexao.php';
-        require 'Usuario.class.php';
+require_once 'conexao.php';
 
-        $u = new Usuario();
+if(isset($_POST['email'], $_POST['senha'])) {
+    
+    $email = trim($_POST['email']);
+    $senha = trim($_POST['senha']);
 
-       
-        $email = addslashes($_POST['email']);
-        $senha = addslashes($_POST['senha']);
+    if(empty($email)) {
+        echo "Preencha seu email";
+    } else if(empty($senha)) {
+        echo "Preencha sua senha";
+    } else {
+    
+        $sql = "SELECT * FROM login WHERE email = :email";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':email' => $email]);
 
-         if($u->login($email, $senha) == true){
-            if(isset($_SESSION['id'])){
-                 header("Location:index.php.php");
-            }else{
-                 header("Location:login.php");
-            }
-         }
-    }else{
-        header("Location:login.php");
+        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if($usuario && $senha == $usuario['senha']) {
+            session_start();
+            $_SESSION['id'] = $usuario['id'];
+            header("Location: painel.php");
+            exit;
+        } else {
+            echo "E-mail ou senha incorretos.";
+        }
     }
+}
 ?>
